@@ -1,0 +1,12 @@
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+.idea/
+.svn/
+extra_apps/xadmin14/
+extra_apps/exadmin
+extra_apps/xadmin15/
+uploads
