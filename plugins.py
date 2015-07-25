@@ -52,7 +52,7 @@ class CreateAdminViewFormLayoutPlugin(BaseAdminPlugin):
         self.admin_view.form_layout = self.admin_view.form_layout_add
         return __()
 
-class ListAdminViewFormListPlugin(BaseAdminPlugin):
+class ListAdminViewQueryFormPlugin(BaseAdminPlugin):
 
     def init_request(self, *args, **kwargs):
         if hasattr(self.admin_view, 'form_list_query'):
@@ -203,4 +203,3 @@ class FormSetPlugin(BaseAdminPlugin):
         #         if key.startswith('form_set_list'):
         #             context.update({key: self.admin_view.form_set_dict[key]})
         return context
-
