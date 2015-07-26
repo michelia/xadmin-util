@@ -83,13 +83,13 @@ class ListAdminViewQueryFormPlugin(BaseAdminPlugin):
         return context
 
 
-class ListAdminViewQueryPlugin(BaseAdminPlugin):
+# class ListAdminViewQueryPlugin(BaseAdminPlugin):
 
-    def init_request(self, *args, **kwargs):
-        return hasattr(self.admin_view, 'get_list_queryset_method')
+#     def init_request(self, *args, **kwargs):
+#         return hasattr(self.admin_view, 'get_list_queryset_method')
 
-    def get_list_queryset(self, __):
-        return self.admin_view.get_list_queryset_method()
+#     def get_list_queryset(self, __):
+#         return self.admin_view.get_list_queryset_method()
 
 
 class TitlePlugin(BaseAdminPlugin):
