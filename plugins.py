@@ -20,7 +20,7 @@ class CreateAdminViewFormPlugin(BaseAdminPlugin):
 
     def get_model_form(self, __, **kwargs):
         self.admin_view.form = self.admin_view.form_add
-        return __(**kwargs)
+        return __()
 
 
 class UpdateAdminViewFormPlugin(BaseAdminPlugin):
@@ -30,7 +30,7 @@ class UpdateAdminViewFormPlugin(BaseAdminPlugin):
 
     def get_model_form(self, __, **kwargs):
         self.admin_view.form = self.admin_view.form_change
-        return __(**kwargs)
+        return __()
 
 
 class UpdateAdminViewFormLayoutPlugin(BaseAdminPlugin):
@@ -185,21 +185,59 @@ class CustomPaginationPlugin(BaseAdminPlugin):
 class FormSetPlugin(BaseAdminPlugin):
 
     def init_request(self, *args, **kwargs):
-        return hasattr(self.admin_view, 'form_set_dict')
+        return hasattr(self.admin_view, 'get_form_set_change')# or hasattr(self.admin_view, 'post_form_set_change')
 
     def get_context(self, context):
-        if isinstance(self.admin_view, CreateAdminView):
-            for key in self.admin_view.form_set_dict:
-                if key.startswith('form_set_add'):
-                    context.update({key: self.admin_view.form_set_dict[key]})
-        if isinstance(self.admin_view, UpdateAdminView):
-            for key in self.admin_view.form_set_dict:
-                if key.startswith('form_set_change'):
-                    helper = 'helper_%s' % key
-                    context.update({key: self.admin_view.form_set_dict[key], helper: self.admin_view.form_set_dict[helper]})
-                    'pass'
-        # if isinstance(self.admin_view, ListAdminView):
+        self.admin_view.get_form_set_change(context)
+        return context
+        # if isinstance(self.admin_view, CreateAdminView):
+        #     for key in self.admin_view.form_set_dict:
+        #         if key.startswith('form_set_add'):
+        #             context.update({key: self.admin_view.form_set_dict[key]})
+        # if isinstance(self.admin_view, UpdateAdminView):
+        #     for key in self.admin_view.form_set_dict:
+        #         if key.startswith('form_set_change'):
+        #             helper = 'helper_%s' % key
+        #             context.update({key: self.admin_view.form_set_dict[key], helper: self.admin_view.form_set_dict[helper]})
+        #             'pass'
         #     for key in self.admin_view.form_set_dict:
         #         if key.startswith('form_set_list'):
         #             context.update({key: self.admin_view.form_set_dict[key]})
         return context
+
+class ListHeaderNamePlugin(BaseAdminPlugin):
+
+    def init_request(self, *args, **kwargs):
+        return hasattr(self.admin_view, 'list_header_name_dict')
+
+    def result_header(self, item, field_name, row):
+        if field_name in self.admin_view.list_header_name_dict:
+            item.text = self.admin_view.list_header_name_dict[field_name]
+        return item
+
+
+
+
+
+
+
+############################################################################################
+# 注册插件
+
+site.register_plugin(CreateAdminViewFormPlugin, CreateAdminView)
+site.register_plugin(CreateAdminViewFormLayoutPlugin, CreateAdminView)
+
+site.register_plugin(UpdateAdminViewFormPlugin, UpdateAdminView)
+site.register_plugin(UpdateAdminViewFormLayoutPlugin, UpdateAdminView)
+
+site.register_plugin(ListAdminViewQueryFormPlugin, ListAdminView)
+# site.register_plugin(ListAdminViewQueryPlugin, ListAdminView)
+site.register_plugin(CustomPaginationPlugin, ListAdminView)
+site.register_plugin(ListHeaderNamePlugin, ListAdminView)
+
+
+# for create update AdminView
+site.register_plugin(FormSetPlugin, ModelFormAdminView)
+
+# for list create update AdminView
+site.register_plugin(TitlePlugin, ModelAdminView)
