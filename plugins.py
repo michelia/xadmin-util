@@ -71,7 +71,7 @@ class ListAdminViewQueryFormPlugin(BaseAdminPlugin):
             return {'data': self.request.POST, 'files': self.request.FILES}
 
     def get_media(self, media):
-        media += self.admin_view.form_list_query.media
+        media += self.admin_view.form_list_query_obj.media
         media.add_js(['js/string-format.js', ])
         return media
 
@@ -182,27 +182,17 @@ class CustomPaginationPlugin(BaseAdminPlugin):
         }
 
 
-class FormSetPlugin(BaseAdminPlugin):
+class ExtraFormPlugin(BaseAdminPlugin):
+    'creat update 页面的 额外form 插件 '
 
     def init_request(self, *args, **kwargs):
-        return hasattr(self.admin_view, 'get_form_set_change')# or hasattr(self.admin_view, 'post_form_set_change')
+        return hasattr(self.admin_view, 'get_extra_form_change') or hasattr(self.admin_view, 'post_extra_form_change')
 
     def get_context(self, context):
-        self.admin_view.get_form_set_change(context)
-        return context
-        # if isinstance(self.admin_view, CreateAdminView):
-        #     for key in self.admin_view.form_set_dict:
-        #         if key.startswith('form_set_add'):
-        #             context.update({key: self.admin_view.form_set_dict[key]})
-        # if isinstance(self.admin_view, UpdateAdminView):
-        #     for key in self.admin_view.form_set_dict:
-        #         if key.startswith('form_set_change'):
-        #             helper = 'helper_%s' % key
-        #             context.update({key: self.admin_view.form_set_dict[key], helper: self.admin_view.form_set_dict[helper]})
-        #             'pass'
-        #     for key in self.admin_view.form_set_dict:
-        #         if key.startswith('form_set_list'):
-        #             context.update({key: self.admin_view.form_set_dict[key]})
+        if hasattr(self.admin_view, 'get_extra_form_change'):
+            self.admin_view.get_extra_form_change(context)
+        if hasattr(self.admin_view, 'post_extra_form_change'):
+            self.admin_view.post_extra_form_change(context)
         return context
 
 class ListHeaderNamePlugin(BaseAdminPlugin):
@@ -237,7 +227,7 @@ site.register_plugin(ListHeaderNamePlugin, ListAdminView)
 
 
 # for create update AdminView
-site.register_plugin(FormSetPlugin, ModelFormAdminView)
+site.register_plugin(ExtraFormPlugin, ModelFormAdminView)
 
 # for list create update AdminView
 site.register_plugin(TitlePlugin, ModelAdminView)

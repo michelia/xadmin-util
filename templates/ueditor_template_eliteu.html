@@ -1,0 +1,42 @@
+ <script id="{{ UEditor.id }}" name="{{ UEditor.name }}"  style="display: inline-block;" type="text/plain">
+     {{ UEditor.value|safe }}
+ </script>
+<div></div>
+<div>
+    {# {{ UEditor.settings|safe }} #}
+</div>
+<script type="text/javascript">
+    {{ UEditor.commands|safe }}
+    // $div = $('#{{ UEditor.id }}').next();
+    // $div.hide();
+
+    //     function render(){
+    //         $('#uediv').hide()
+    //         // $('#myEditor').show();
+    //         UE.getEditor('myEditor')
+    //     };
+    //     function closeww(){
+    //         $('#uediv').html(UE.getEditor('myEditor').getContent())
+    //         uParse('#uediv', {rootPath: '../'});
+    //         UE.getEditor('myEditor').destroy();
+    //         // $('#myEditor').hide();
+    //         $('#uediv').show()
+    //         // UE.getEditor('myEditor')
+    //     };
+    var {{ UEditor.id  }} = UE.getEditor('{{ UEditor.id  }}',{{ UEditor.settings|safe }});
+     {{ UEditor.id  }}.ready(function(){
+         {{ UEditor.bindEvents|safe }}
+        // {{ UEditor.id  }}.style.visibility="hidden";
+        // {{ UEditor.id  }}.style.height=0;
+     });
+</script>
+
+{% comment %}
+       //  var {{ UEditor.id  }} = UE.getEditor('{{ UEditor.id  }}',{
+   //     toolbars: [
+   //          ['bold','italic','underline','forecolor','backcolor','removeformat','horizontal','fontsize','insertorderedlist','insertunorderedlist','link','unlink','emotion','insertimage','insertvideo','attachment','spechars']
+   //     ],
+   //     elementPathEnabled:false,
+   //     wordCount:false
+   // });
+{% endcomment %}

@@ -101,12 +101,15 @@ class CertificateImageInput(forms.FileInput):
             '''            
         # if attrs.get('')
         substitutions = {
-            # 'img_uri': 'http://himg.baidu.com/sys/portrait/hotitem/wildkid/23',
-            'img_uri': 'https://coding.net/static/fruit_avatar/Fruit-3.png',
+            # 'img_uri': 'https://coding.net/static/fruit_avatar/Fruit-3.png',
+            # 'img_uri': value if value else 'https://coding.net/static/fruit_avatar/Fruit-3.png',
+            'img_uri': '',
             # 下面的位置不能颠倒，因为要把 certificate_name 弹出来使用， 所以不能颠倒
             'certificate_name': self.attrs.pop('certificate_name', ''),
             'input': super(CertificateImageInput, self).render(name, value, attrs),
         }
+        if value and hasattr(value, "url"):
+            substitutions['img_uri'] = value.url
         return mark_safe(template % substitutions)
 
 class NoLabelImageInput(forms.FileInput):
@@ -120,8 +123,9 @@ class NoLabelImageInput(forms.FileInput):
             %(input)s
         '''
         substitutions = {
-            # 'img_uri': 'http://himg.baidu.com/sys/portrait/hotitem/wildkid/23',
-            'img_uri': 'https://coding.net/static/fruit_avatar/Fruit-3.png',
+            # 'img_uri': 'https://coding.net/static/fruit_avatar/Fruit-3.png',
+            'img_uri': value.url,
             'input': super(NoLabelImageInput, self).render(name, value, attrs),
         }
         return mark_safe(template % substitutions)
+
