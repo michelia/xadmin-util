@@ -9,10 +9,37 @@ from django.utils.html import escape, conditional_escape
 from django.utils.translation import ugettext, ugettext_lazy
 from django.utils.encoding import StrAndUnicode, force_unicode
 from django.utils.safestring import mark_safe
+from django.forms import Media
+
+from xadmin.util import vendor
 
 from ELITEUADMIN.settings import Constant
 
 FILE_INPUT_CONTRADICTION = object()
+
+class ImagePreviewInput(forms.FileInput):
+    @property
+    def media(self):
+        '上传前 预览图片'
+        media = Media()
+        media.add_js(['js/previrew-image-before-upload.js'])
+        # media.add_css({'screen': files})
+        return media
+
+    def render(self, name, value, attrs=None):
+        template = u'''
+                <a href="%(img_uri)s" target="view_window">
+                <img src="%(img_uri)s"  width="200" height="200"></img>
+                </a>
+                <div class="preview" hidden="hidden"></div>
+                %(input)s
+            '''
+        self.attrs['onchange'] = 'previewImg(this)'
+        substitutions = {
+            'img_uri': value.url if hasattr(value, 'url') else 'https://coding.net/static/fruit_avatar/Fruit-3.png',
+            'input': super(ImagePreviewInput, self).render(name, value, attrs),
+        }
+        return mark_safe(template % substitutions)
 
 class ImageInput(forms.FileInput):
     initial_text = ugettext_lazy('Currently')
@@ -46,7 +73,14 @@ class ImageInput(forms.FileInput):
             'clear_template': '',
             'clear_checkbox_label': self.clear_checkbox_label,
         }
-        template = u'%(input)s'
+        template = u'''
+            <a href="%(img_uri)s" target="view_window">
+                <img src="%(img_uri)s"  width="200" height="200"></img>
+            </a>
+            <div class="preview" hidden="hidden"></div>
+            %(input)s
+            '''
+
         substitutions['input'] = super(ImageInput, self).render(name, value, attrs)
 
         if value and hasattr(value, "url"):
@@ -77,15 +111,26 @@ class ImageInput(forms.FileInput):
         return upload
 
 class CertificateImageInput(forms.FileInput):
+    @property
+    def media(self):
+        '上传前 预览图片'
+        media = Media()
+        media.add_js(['js/previrew-image-before-upload.js'])
+        # media.add_css({'screen': files})
+        return media
+
     def render(self, name, value, attrs=None):
-        # 下面这种方式可以去掉后面再增加类
+        # 下面这种方式可以去掉后面再增加类, 就是禁止 crispy添加的类
         attrs.update({'class': ''})
+        # 添加执行图片预览的函数调用
+        self.attrs['onchange'] = 'previewImg(this)'
         auth_value = int(self.attrs.pop('auth_value', Constant.TeacherCertificateNotPass))
         if auth_value == Constant.TeacherCertificatePass:
             template = u'''
                 <a href="%(img_uri)s" target="view_window">
                 <img src="%(img_uri)s"  width="200" height="200"></img>
                 </a>
+                <div class="preview" hidden="hidden"></div>
                 %(input)s
                 <button name="certificate_pass" data-certificate="%(certificate_name)s" class="btn btn-default" disabled="disabled" >通过审核</button>
                 <button name="certificate_not" data-certificate="%(certificate_name)s" class="btn btn-default">未通过审核</button>
@@ -95,15 +140,16 @@ class CertificateImageInput(forms.FileInput):
                 <a href="%(img_uri)s" target="view_window">
                 <img src="%(img_uri)s"  width="200" height="200"></img>
                 </a>
+                <div class="preview" hidden="hidden"></div>
                 %(input)s
                 <button name="certificate_pass" data-certificate="%(certificate_name)s" class="btn btn-default">通过审核</button>
                 <button name="certificate_not" data-certificate="%(certificate_name)s" class="btn btn-default" disabled="disabled" >未通过审核</button>
-            '''            
+            '''
         # if attrs.get('')
         substitutions = {
             # 'img_uri': 'https://coding.net/static/fruit_avatar/Fruit-3.png',
             # 'img_uri': value if value else 'https://coding.net/static/fruit_avatar/Fruit-3.png',
-            'img_uri': '',
+            'img_uri': 'https://coding.net/static/fruit_avatar/Fruit-3.png',
             # 下面的位置不能颠倒，因为要把 certificate_name 弹出来使用， 所以不能颠倒
             'certificate_name': self.attrs.pop('certificate_name', ''),
             'input': super(CertificateImageInput, self).render(name, value, attrs),
@@ -113,18 +159,28 @@ class CertificateImageInput(forms.FileInput):
         return mark_safe(template % substitutions)
 
 class NoLabelImageInput(forms.FileInput):
+    @property
+    def media(self):
+        '上传前 预览图片'
+        media = Media()
+        media.add_js(['js/previrew-image-before-upload.js'])
+        # media.add_css({'screen': files})
+        return media
 
     def render(self, name, value, attrs=None):
         attrs.update({'class': ''})
+        # 添加执行图片预览的函数调用
+        self.attrs['onchange'] = 'previewImg(this)'
         template = u'''
             <a href="%(img_uri)s" target="view_window">
             <img src="%(img_uri)s"  width="230" height="230"></img>
             </a>
+            <div class="preview" hidden="hidden"></div>
             %(input)s
         '''
         substitutions = {
             # 'img_uri': 'https://coding.net/static/fruit_avatar/Fruit-3.png',
-            'img_uri': value.url,
+            'img_uri': value.url if value else 'https://coding.net/static/fruit_avatar/Fruit-3.png',
             'input': super(NoLabelImageInput, self).render(name, value, attrs),
         }
         return mark_safe(template % substitutions)
