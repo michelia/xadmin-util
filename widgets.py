@@ -121,6 +121,7 @@ class CertificateImageInput(forms.FileInput):
 
     def render(self, name, value, attrs=None):
         # 下面这种方式可以去掉后面再增加类, 就是禁止 crispy添加的类
+        # auth_value 代表认证状态
         attrs.update({'class': ''})
         # 添加执行图片预览的函数调用
         self.attrs['onchange'] = 'previewImg(this)'
@@ -180,7 +181,7 @@ class NoLabelImageInput(forms.FileInput):
         '''
         substitutions = {
             # 'img_uri': 'https://coding.net/static/fruit_avatar/Fruit-3.png',
-            'img_uri': value.url if value else 'https://coding.net/static/fruit_avatar/Fruit-3.png',
+            'img_uri': value.url if value and hasattr(value, 'url') else 'https://coding.net/static/fruit_avatar/Fruit-3.png',
             'input': super(NoLabelImageInput, self).render(name, value, attrs),
         }
         return mark_safe(template % substitutions)
