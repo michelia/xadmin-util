@@ -221,13 +221,9 @@ site.register_plugin(UpdateAdminViewFormPlugin, UpdateAdminView)
 site.register_plugin(UpdateAdminViewFormLayoutPlugin, UpdateAdminView)
 
 site.register_plugin(ListAdminViewQueryFormPlugin, ListAdminView)
-# site.register_plugin(ListAdminViewQueryPlugin, ListAdminView)
 site.register_plugin(CustomPaginationPlugin, ListAdminView)
 site.register_plugin(ListHeaderNamePlugin, ListAdminView)
 
-
-# for create update AdminView
 site.register_plugin(ExtraFormPlugin, ModelFormAdminView)
 
-# for list create update AdminView
 site.register_plugin(TitlePlugin, ModelAdminView)
